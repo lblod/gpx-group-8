@@ -24,6 +24,10 @@ app.get("/municipalities", async (req, res) => {
       );
   }
 
+  // TODO: parse GPX file and find list of track points
+
+  // TODO: make track points "coarser" --> otherwise too much api calls
+
   // TODO: should be fetched from https://geo.api.vlaanderen.be/geolocation/v4/Location?latlon=50.84223%2C3.60332 (lat and long from gpx points)
   const hardcodedMunicipalities = [
     { postalCode: "9690", name: "Kluisbergen" },
