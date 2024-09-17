@@ -1,5 +1,40 @@
-import { app } from "mu";
+import { app, query, sparqlEscapeString } from "mu";
+import { existsSync } from "fs";
 
-app.get("/hello", function (req, res) {
-  res.send("Hello mu-javascript-template");
+const STORAGE_FOLDER_PATH = "/share/";
+
+app.get("/municipalities", async (req, res) => {
+  const virtualFileUuid = req.query.id;
+  if (!virtualFileUuid)
+    return res.status(401).send("Request is missing 'id' query parameter.");
+
+  const fileUriQuery = generateFileUriSelectQuery(virtualFileUuid);
+  const fileUriResult = await query(fileUriQuery);
+  const fileUriBindings = fileUriResult.results.bindings;
+  if (fileUriBindings.length === 0) {
+    return res.status(404).send("Not Found");
+  }
+  const physicalFileUri = fileUriBindings[0].physicalFileUri.value;
+  const filePath = physicalFileUri.replace("share://", STORAGE_FOLDER_PATH);
+  if (!existsSync(filePath)) {
+    return res
+      .status(500)
+      .send(
+        "Could not find file in path. Check if the physical file is available on the server and if this service has the right mountpoint."
+      );
+  }
+
+  return res.status(200).send({ message: "File found!" });
 });
+
+function generateFileUriSelectQuery(virtualFileUuid) {
+  return `
+    PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+    PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+
+    SELECT ?virtualFileUri ?physicalFileUri
+    WHERE {
+      ?virtualFileUri mu:uuid ${sparqlEscapeString(virtualFileUuid)} .
+      ?physicalFileUri nie:dataSource ?virtualFileUri .
+    }`;
+}
