@@ -24,7 +24,15 @@ app.get("/municipalities", async (req, res) => {
       );
   }
 
-  return res.status(200).send({ message: "File found!" });
+  // TODO: should be fetched from https://geo.api.vlaanderen.be/geolocation/v4/Location?latlon=50.84223%2C3.60332 (lat and long from gpx points)
+  const hardcodedMunicipalities = [
+    { postalCode: "9690", name: "Kluisbergen" },
+    { postalCode: "9600", name: "Ronse" },
+    { postalCode: "9790", name: "Wortegem-Petegem" },
+    { postalCode: "9700", name: "Oudenaarde" },
+  ];
+
+  return res.status(200).send(hardcodedMunicipalities);
 });
 
 function generateFileUriSelectQuery(virtualFileUuid) {
