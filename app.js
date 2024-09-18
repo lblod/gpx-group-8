@@ -5,10 +5,37 @@ import GPXParser from "gpxparser";
 
 const STORAGE_FOLDER_PATH = "/share/";
 
+// Hackathon: to make sure request also works for
+const hardcodedMunicipalities = [
+  {
+    postalCode: "9690",
+    name: "Kluisbergen",
+    uri: "http://data.lblod.info/id/bestuurseenheden/92fd2a12bdcc24f8e6ef34de765d54b3d7a0412b69c0877836cbe3098a5caf57>",
+  },
+  {
+    postalCode: "9600",
+    name: "Ronse",
+    uri: " http://data.lblod.info/id/bestuurseenheden/59eaecae469f80eccaf6d36a165927eb8ee8749b9866ab1730e6b1ba45dfaaa7",
+  },
+  {
+    postalCode: "9790",
+    name: "Wortegem-Petegem",
+    uri: "http://data.lblod.info/id/bestuurseenheden/4b93b99b2a80c6ce4e64850589a8c0163fc055b074b061a64add3e1af303f1fe",
+  },
+  {
+    postalCode: "9700",
+    name: "Oudenaarde",
+    uri: "http://data.lblod.info/id/bestuurseenheden/d9f7c0ab4920fdecf3f9a60b92e921b5ca07248fcb0eac2113eb97392ddd6c6c",
+  },
+];
+
 app.get("/municipalities", async (req, res) => {
   const virtualFileUuid = req.query.id;
-  if (!virtualFileUuid)
-    return res.status(401).send("Request is missing 'id' query parameter.");
+  if (!virtualFileUuid) {
+    // Hackaton: temporarily disabled to make sure requests without file id always return mock data
+    // return res.status(401).send("Request is missing 'id' query parameter.");
+    return res.status(200).send(hardcodedMunicipalities);
+  }
 
   const fileUriQuery = generateFileUriSelectQuery(virtualFileUuid);
   const fileUriResult = await query(fileUriQuery);
@@ -49,29 +76,8 @@ app.get("/municipalities", async (req, res) => {
   const coarsenedPoints = coarsenPoints(points);
 
   // TODO: should be fetched from https://geo.api.vlaanderen.be/geolocation/v4/Location?latlon=50.84223%2C3.60332 (lat and long from gpx points)
-  const hardcodedMunicipalities = [
-    {
-      postalCode: "9690",
-      name: "Kluisbergen",
-      uri: "http://data.lblod.info/id/bestuurseenheden/92fd2a12bdcc24f8e6ef34de765d54b3d7a0412b69c0877836cbe3098a5caf57>",
-    },
-    {
-      postalCode: "9600",
-      name: "Ronse",
-      uri: " http://data.lblod.info/id/bestuurseenheden/59eaecae469f80eccaf6d36a165927eb8ee8749b9866ab1730e6b1ba45dfaaa7",
-    },
-    {
-      postalCode: "9790",
-      name: "Wortegem-Petegem",
-      uri: "http://data.lblod.info/id/bestuurseenheden/4b93b99b2a80c6ce4e64850589a8c0163fc055b074b061a64add3e1af303f1fe",
-    },
-    {
-      postalCode: "9700",
-      name: "Oudenaarde",
-      uri: "http://data.lblod.info/id/bestuurseenheden/d9f7c0ab4920fdecf3f9a60b92e921b5ca07248fcb0eac2113eb97392ddd6c6c",
-    },
-  ];
 
+  // Hackathon: return hardcoded municipalities since coarsenPoints couldn't be implemented on time
   return res.status(200).send(hardcodedMunicipalities);
 });
 
