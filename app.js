@@ -43,7 +43,7 @@ app.get("/municipalities", async (req, res) => {
     });
   });
 
-  // TODO: make track points "coarser" --> otherwise too much api calls
+  const coarsenedPoints = coarsenPoints(points);
 
   // TODO: should be fetched from https://geo.api.vlaanderen.be/geolocation/v4/Location?latlon=50.84223%2C3.60332 (lat and long from gpx points)
   const hardcodedMunicipalities = [
@@ -66,4 +66,11 @@ function generateFileUriSelectQuery(virtualFileUuid) {
       ?virtualFileUri mu:uuid ${sparqlEscapeString(virtualFileUuid)} .
       ?physicalFileUri nie:dataSource ?virtualFileUri .
     }`;
+}
+
+// GPX files naturally contain a very large amount of lat,long points
+// We don't want to do too many API calls in next step --> we need to "coarsen"
+function coarsenPoints(points) {
+  // TODO: implement algorithm to "coarsen" points
+  return points;
 }
