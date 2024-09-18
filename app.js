@@ -1,5 +1,6 @@
 import { app, query, sparqlEscapeString } from "mu";
 import { existsSync } from "fs";
+import GPXParser from "gpxparser";
 
 const STORAGE_FOLDER_PATH = "/share/";
 
