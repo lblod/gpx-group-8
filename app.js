@@ -33,7 +33,7 @@ app.get("/municipalities", async (req, res) => {
   const virtualFileUuid = req.query.id;
   if (!virtualFileUuid) {
     // Hackaton: temporarily disabled to make sure requests without file id always return mock data
-    // return res.status(401).send("Request is missing 'id' query parameter.");
+    // return res.status(400).send("Request is missing 'id' query parameter.");
     return res.status(200).send(hardcodedMunicipalities);
   }
 
