@@ -16,5 +16,7 @@
     "url": "https://github.com/lblod/gpx-group-8/issues"
   },
   "homepage": "https://github.com/lblod/gpx-group-8#readme",
-  "dependencies": {}
+  "dependencies": {
+    "gpxparser": "^3.0.8"
+  }
 }
