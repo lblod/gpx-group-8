@@ -1,5 +1,6 @@
 import { app, query, sparqlEscapeString } from "mu";
 import { existsSync } from "fs";
+import { readFile } from "fs/promises";
 import GPXParser from "gpxparser";
 
 const STORAGE_FOLDER_PATH = "/share/";
@@ -24,10 +25,11 @@ app.get("/municipalities", async (req, res) => {
         "Could not find file in path. Check if the physical file is available on the server and if this service has the right mountpoint."
       );
   }
+  const gpxString = await readFile(filePath, "utf-8");
 
   const gpx = new GPXParser();
   try {
-    gpx.parse(data);
+    gpx.parse(gpxString);
   } catch (error) {
     console.error(error);
     return res.status(400).send("File for given id cannot be parsed as GPX.");
