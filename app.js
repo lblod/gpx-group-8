@@ -12,7 +12,7 @@ app.get("/municipalities", async (req, res) => {
   const fileUriResult = await query(fileUriQuery);
   const fileUriBindings = fileUriResult.results.bindings;
   if (fileUriBindings.length === 0) {
-    return res.status(404).send("Not Found");
+    return res.status(404).send("File for given id could not be found.");
   }
   const physicalFileUri = fileUriBindings[0].physicalFileUri.value;
   const filePath = physicalFileUri.replace("share://", STORAGE_FOLDER_PATH);
@@ -24,7 +24,24 @@ app.get("/municipalities", async (req, res) => {
       );
   }
 
-  // TODO: parse GPX file and find list of track points
+  const gpx = new GPXParser();
+  try {
+    gpx.parse(data);
+  } catch (error) {
+    console.error(error);
+    return res.status(400).send("File for given id cannot be parsed as GPX.");
+  }
+
+  if (!gpx.tracks || gpx.tracks.length === 0) {
+    return res.status(400).send("No tracks found in GPX file.");
+  }
+
+  const points = [];
+  gpx.tracks.forEach((track) => {
+    track.points.forEach((point) => {
+      points.push({ lat: point.lat, lon: point.lon });
+    });
+  });
 
   // TODO: make track points "coarser" --> otherwise too much api calls
 
